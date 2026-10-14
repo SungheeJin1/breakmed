@@ -1,15 +1,14 @@
 'use strict';
 
 // ---- 설정 ----------------------------------------------------------------
-const ARRIVE_HOUR = 13;    // 오후 1시: 목각 인형 도착 + 알림
-const BREAK_HOUR = 22;     // 밤 10시: 부수기 알림
+const BREAK_HOUR = 22;     // 밤 10시: 부수기 알림 (인형별 도착 시간은 아래 DOLLS의 arrive)
 const DAY_START_HOUR = 4;  // 새벽 4시 전까지는 '어제'로 취급 (자정 넘어 부숴도 인정)
 const SEQUENTIAL = true;   // 첫 번째 → 두 번째 → 세 번째 순서로만 부술 수 있음
 
 const DOLLS = [
-  { id: 'calcium', name: '칼슘제', question: '칼슘제를 먹었습니까?', icon: '🦴', color: '#4f7fb8', tag: '칼슘' },
-  { id: 'ginseng', name: '홍삼', question: '홍삼을 먹었습니까?', icon: '🌱', color: '#b5482a', tag: '홍삼' },
-  { id: 'acne', name: '여드름약', question: '여드름약을 먹었습니까?', icon: '💊', color: '#4f8f5a', tag: '여드름' },
+  { id: 'calcium', name: '칼슘제', question: '칼슘제를 먹었습니까?', icon: '🦴', color: '#4f7fb8', tag: '칼슘', arrive: 13 },
+  { id: 'ginseng', name: '홍삼', question: '홍삼을 먹었습니까?', icon: '🌱', color: '#b5482a', tag: '홍삼', arrive: 13 },
+  { id: 'acne', name: '여드름약', question: '여드름약을 먹었습니까?', icon: '💊', color: '#4f8f5a', tag: '여드름', arrive: 22 },
 ];
 
 const STORE_KEY = 'breakmed:v1';
@@ -43,8 +42,21 @@ function at(day, hour) {
 }
 function today() {
   const k = keyOf(gameDay());
-  state.days[k] ||= { received: false, broken: [] };
-  return state.days[k];
+  const rec = (state.days[k] ||= { received: [], broken: [] });
+  // 예전 형식(received: true/false)이면 지금까지 도착한 인형만 받은 것으로 바꿈
+  if (!Array.isArray(rec.received)) rec.received = rec.received ? arrivedIds() : [];
+  return rec;
+}
+function hasArrived(doll, now = new Date()) { return now >= at(gameDay(now), doll.arrive); }
+function arrivedIds(now = new Date()) { return DOLLS.filter((d) => hasArrived(d, now)).map((d) => d.id); }
+function eulReul(word) { // 받침 있으면 '을', 없으면 '를'
+  const c = word.charCodeAt(word.length - 1) - 0xac00;
+  return word + (c >= 0 && c <= 11171 && c % 28 ? '을' : '를');
+}
+function hourLabel(h) {
+  if (h < 12) return `오전 ${h}시`;
+  if (h === 12) return '낮 12시';
+  return `${h >= 18 ? '밤' : '오후'} ${h - 12}시`;
 }
 function isDone(rec) { return rec && DOLLS.every((d) => rec.broken.includes(d.id)); }
 
@@ -99,36 +111,37 @@ const SLASH_SVG = `
 // ---- 화면 ----------------------------------------------------------------
 function slotStatus(rec, i) {
   const doll = DOLLS[i];
-  if (!rec.received) return 'waiting';
+  if (!rec.received.includes(doll.id)) return 'waiting';
   if (rec.broken.includes(doll.id)) return 'broken';
   if (SEQUENTIAL && i > 0 && !rec.broken.includes(DOLLS[i - 1].id)) return 'locked';
   return 'ready';
 }
 
-function render({ arriving = false } = {}) {
+function render({ arriving = [] } = {}) {
   const now = new Date();
   const day = gameDay(now);
   const rec = today();
-  const arriveAt = at(day, ARRIVE_HOUR);
 
   $('today').textContent = day.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'long' });
   const s = streak();
   $('streak').textContent = s > 0 ? `🔥 ${s}일 연속 성공` : '';
 
-  const canReceive = !rec.received && now >= arriveAt;
-  $('receiveBtn').hidden = !canReceive;
+  const toReceive = DOLLS.filter((d) => hasArrived(d, now) && !rec.received.includes(d.id));
+  $('receiveBtn').hidden = !toReceive.length;
 
   const left = DOLLS.filter((d) => !rec.broken.includes(d.id));
+  const next = left[0];
   let msg;
-  if (!rec.received && now < arriveAt) {
-    const mins = Math.ceil((arriveAt - now) / 60000);
-    msg = `오후 ${ARRIVE_HOUR - 12}시에 목각 인형 3개가 도착해요.<br><small>${Math.floor(mins / 60)}시간 ${mins % 60}분 남음</small>`;
-  } else if (canReceive) {
-    msg = '📦 목각 인형이 도착했어요! 받아 주세요.';
-  } else if (left.length) {
-    const next = SEQUENTIAL ? left[0] : null;
-    msg = next
-      ? `<b>${next.name}</b>을(를) 먹고 ${DOLLS.indexOf(next) + 1}번째 인형을 부수세요.`
+  if (toReceive.length) {
+    msg = `📦 ${toReceive.map((d) => d.name).join('·')} 인형이 도착했어요! 받아 주세요.`;
+  } else if (next && !rec.received.includes(next.id)) {
+    const coming = DOLLS.filter((d) => d.arrive === next.arrive);
+    const mins = Math.ceil((at(day, next.arrive) - now) / 60000);
+    msg = `${hourLabel(next.arrive)}에 ${coming.map((d) => d.name).join('·')} 인형이 도착해요.`
+      + `<br><small>${Math.floor(mins / 60)}시간 ${mins % 60}분 남음</small>`;
+  } else if (next) {
+    msg = SEQUENTIAL
+      ? `<b>${eulReul(next.name)}</b> 먹고 ${DOLLS.indexOf(next) + 1}번째 인형을 부수세요.`
       : `약을 먹고 인형을 부수세요. (${left.length}개 남음)`;
   } else {
     msg = '오늘의 목각 인형을 모두 부쉈어요.';
@@ -141,9 +154,10 @@ function render({ arriving = false } = {}) {
   DOLLS.forEach((doll, i) => {
     const st = slotStatus(rec, i);
     const slot = document.createElement('div');
-    slot.className = `slot ${st}${arriving ? ' arriving' : ''}`;
+    const isArriving = arriving.includes(doll.id);
+    slot.className = `slot ${st}${isArriving ? ' arriving' : ''}`;
     slot.dataset.id = doll.id;
-    const sub = { waiting: '도착 전', locked: '🔒 앞 인형 먼저', ready: '눌러서 부수기', broken: '✔ 부숨' }[st];
+    const sub = { waiting: `${hourLabel(doll.arrive)} 도착`, locked: '🔒 앞 인형 먼저', ready: '눌러서 부수기', broken: '✔ 부숨' }[st];
     slot.innerHTML = `
       <button class="doll" aria-label="${i + 1}번째 목각 인형: ${doll.name} (${sub})" ${st === 'ready' ? '' : 'aria-disabled="true"'}>
         <div class="half bot">${dollSVG(doll)}</div>
@@ -152,7 +166,7 @@ function render({ arriving = false } = {}) {
       </button>
       <div class="label">${i + 1}. ${doll.name}</div>
       <div class="sub">${sub}</div>`;
-    if (arriving) slot.querySelector('.doll').style.animationDelay = `${i * 0.15}s`;
+    if (isArriving) slot.querySelector('.doll').style.animationDelay = `${arriving.indexOf(doll.id) * 0.15}s`;
     if (st === 'broken') {
       slot.querySelector('.half.top').style.transform = FALLEN;
     }
@@ -160,7 +174,7 @@ function render({ arriving = false } = {}) {
     shelf.appendChild(slot);
   });
 
-  if (arriving) {
+  if (arriving.length) {
     setTimeout(() => shelf.querySelectorAll('.slot').forEach((el) => el.classList.remove('arriving')), 1200);
   }
 }
@@ -215,9 +229,11 @@ $('ateBtn').addEventListener('click', async () => {
 });
 
 $('receiveBtn').addEventListener('click', () => {
-  today().received = true;
+  const rec = today();
+  const fresh = arrivedIds().filter((id) => !rec.received.includes(id));
+  rec.received.push(...fresh);
   save();
-  render({ arriving: true });
+  render({ arriving: fresh });
 });
 
 // ---- 부수기 연출 ---------------------------------------------------------
@@ -355,19 +371,25 @@ function scheduleNotifications() {
   timers = [];
   if (!notifyOn()) return;
   const now = new Date();
-  const plan = [
-    [ARRIVE_HOUR, () => show('📦 목각 인형 도착!', '오늘의 목각 인형 3개가 도착했어요.')],
-    [BREAK_HOUR, () => {
-      const left = DOLLS.filter((d) => !today().broken.includes(d.id));
-      if (left.length) show('🔨 목각 인형을 부술 시간!', `${left.map((d) => d.name).join(', ')} 먹고 인형을 부수세요.`);
-    }],
-  ];
+  // 인형이 도착하는 시각마다, 그리고 밤 부수기 시각에 알림
+  const hours = [...new Set([...DOLLS.map((d) => d.arrive), BREAK_HOUR])];
+  const plan = hours.map((hour) => [hour, () => {
+    const rec = today();
+    const coming = DOLLS.filter((d) => d.arrive === hour);
+    const left = DOLLS.filter((d) => d.arrive <= hour && !rec.broken.includes(d.id));
+    if (coming.length) show(`📦 ${coming.map((d) => d.name).join('·')} 인형 도착!`, '먹고 나서 인형을 베세요.');
+    else if (left.length) show('🔨 인형을 벨 시간!', `${left.map((d) => d.name).join(', ')} 먹고 인형을 베세요.`);
+  }]);
   for (const [hour, fn] of plan) {
     const t = new Date(now);
     t.setHours(hour, 0, 0, 0);
     if (t <= now) t.setDate(t.getDate() + 1);
     timers.push(setTimeout(() => { fn(); scheduleNotifications(); }, t - now));
   }
+}
+
+function notifyHoursText() {
+  return [...new Set([...DOLLS.map((d) => d.arrive), BREAK_HOUR])].sort((x, y) => x - y).map(hourLabel).join(', ');
 }
 
 function renderNotifyState() {
@@ -378,7 +400,7 @@ function renderNotifyState() {
     return;
   }
   if (Notification.permission === 'denied') el.textContent = '알림이 차단돼 있어요. 휴대폰 설정에서 허용해 주세요.';
-  else if (notifyOn()) el.textContent = `켜짐 — 매일 오후 ${ARRIVE_HOUR - 12}시, 밤 ${BREAK_HOUR - 12}시`;
+  else if (notifyOn()) el.textContent = `켜짐 — 매일 ${notifyHoursText()}`;
   else el.textContent = '';
   $('notifyBtn').textContent = notifyOn() ? '🔔 테스트 알림 보내기' : '🔔 앱 알림 켜기';
 }
@@ -388,7 +410,7 @@ $('notifyBtn').addEventListener('click', async () => {
   const p = await Notification.requestPermission();
   if (p === 'granted') {
     try { localStorage.setItem(NOTIFY_KEY, '1'); } catch { /* 무시 */ }
-    show('🔔 알림 켜짐', `매일 오후 ${ARRIVE_HOUR - 12}시와 밤 ${BREAK_HOUR - 12}시에 알려 드릴게요.`);
+    show('🔔 알림 켜짐', `매일 ${notifyHoursText()}에 알려 드릴게요.`);
   }
   renderNotifyState();
   scheduleNotifications();
