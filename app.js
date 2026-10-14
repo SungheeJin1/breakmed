@@ -6,8 +6,8 @@ const DAY_START_HOUR = 4;  // 새벽 4시 전까지는 '어제'로 취급 (자�
 const SEQUENTIAL = true;   // 첫 번째 → 두 번째 → 세 번째 순서로만 부술 수 있음
 
 const DOLLS = [
-  { id: 'calcium', name: '칼슘제', question: '칼슘제를 먹었습니까?', icon: '🦴', color: '#4f7fb8', tag: '칼슘', arrive: 13 },
-  { id: 'ginseng', name: '홍삼', question: '홍삼을 먹었습니까?', icon: '🌱', color: '#b5482a', tag: '홍삼', arrive: 13 },
+  { id: 'calcium', name: '칼슘제', question: '칼슘제를 먹었습니까?', icon: '🦴', color: '#4f7fb8', tag: '칼슘', arrive: 10 },
+  { id: 'ginseng', name: '홍삼', question: '홍삼을 먹었습니까?', icon: '🌱', color: '#b5482a', tag: '홍삼', arrive: 10 },
   { id: 'acne', name: '여드름약', question: '여드름약을 먹었습니까?', icon: '💊', color: '#4f8f5a', tag: '여드름', arrive: 22 },
 ];
 
@@ -425,7 +425,7 @@ render();
 renderNotifyState();
 scheduleNotifications();
 
-// 시간이 지나면(오후 1시, 새벽 4시 등) 화면 갱신 — 모달이 떠 있거나 부수는 중엔 건드리지 않음
+// 시간이 지나면(인형 도착 시각, 새벽 4시 등) 화면 갱신 — 모달이 떠 있거나 부수는 중엔 건드리지 않음
 const idle = () => $('modal').hidden && !busy;
 setInterval(() => { if (idle()) render(); }, 30000);
 document.addEventListener('visibilitychange', () => {
