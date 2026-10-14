@@ -1,5 +1,5 @@
 // 오프라인에서도 앱이 열리도록 파일을 캐시합니다.
-const CACHE = 'breakmed-v1';
+const CACHE = 'breakmed-v2';
 const FILES = ['./', 'index.html', 'style.css', 'app.js', 'manifest.webmanifest', 'reminders.ics',
   'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png'];
 

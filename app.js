@@ -56,37 +56,44 @@ function streak() {
   return n;
 }
 
-// ---- 목각 인형 그림 ------------------------------------------------------
+// ---- 짚단 인형 그림 (大자 모양, 칼로 베는 연습용) ------------------------
+function strawLines(x1, x2, y1, y2, step, vertical) {
+  let d = '';
+  if (vertical) for (let x = x1; x <= x2; x += step) d += `M${x} ${y1}L${x + 0.6} ${y2}`;
+  else for (let y = y1; y <= y2; y += step) d += `M${x1} ${y}L${x2} ${y + 0.4}`;
+  return `<path d="${d}" stroke="#a9852f" stroke-width=".9" fill="none" opacity=".75"/>`;
+}
+
 function dollSVG(doll) {
   return `
 <svg viewBox="0 0 120 180" xmlns="http://www.w3.org/2000/svg">
-  <path d="M60 6C34 6 24 34 32 60C12 78 8 118 14 148C18 170 40 177 60 177C80 177 102 170 106 148C112 118 108 78 88 60C96 34 86 6 60 6Z"
-        fill="#c48a52" stroke="#6b4226" stroke-width="3"/>
-  <g fill="none" stroke="#8b5a2b" stroke-width="1.4" opacity=".35">
-    <path d="M24 100C40 92 44 110 60 104"/><path d="M70 150C84 142 92 156 102 146"/>
-    <path d="M18 132C30 126 36 138 48 132"/><path d="M78 88C88 82 96 92 104 86"/>
-  </g>
-  <path d="M60 10C38 10 28 30 30 52C40 46 50 66 60 66C70 66 80 46 90 52C92 30 82 10 60 10Z" fill="${doll.color}"/>
-  <circle cx="60" cy="42" r="21" fill="#f7e3c8" stroke="#6b4226" stroke-width="1.5"/>
-  <path d="M42 30C48 22 72 22 78 30C70 27 50 27 42 30Z" fill="#3b2414"/>
-  <ellipse cx="52" cy="42" rx="2.6" ry="3.4" fill="#3b2414"/>
-  <ellipse cx="68" cy="42" rx="2.6" ry="3.4" fill="#3b2414"/>
-  <circle cx="47" cy="50" r="4" fill="#f19a9a" opacity=".7"/>
-  <circle cx="73" cy="50" r="4" fill="#f19a9a" opacity=".7"/>
-  <path d="M54 53Q60 58 66 53" fill="none" stroke="#3b2414" stroke-width="2" stroke-linecap="round"/>
-  <ellipse cx="60" cy="122" rx="32" ry="38" fill="#fff6e6" stroke="${doll.color}" stroke-width="4"/>
-  <circle cx="60" cy="108" r="11" fill="${doll.color}" opacity=".9"/>
-  <circle cx="60" cy="108" r="4" fill="#fff6e6"/>
-  <text x="60" y="140" text-anchor="middle" font-size="14" font-weight="800" fill="${doll.color}"
+  <rect x="55" y="140" width="10" height="34" fill="#7a4a24"/>
+  <rect x="32" y="169" width="56" height="9" rx="2" fill="#5a3518"/>
+  <path d="M10 61Q60 55 110 61L110 81Q60 75 10 81Z" fill="#d6b25e" stroke="#94712c" stroke-width="1.5"/>
+  ${strawLines(12, 108, 64, 78, 3.5, false)}
+  <path d="M10 62L3 57M10 66L2 65M10 71L1 73M10 76L3 81M10 80L5 86M110 62L117 57M110 66L118 65M110 71L119 73M110 76L117 81M110 80L115 86"
+        stroke="#b8923e" stroke-width="1.4" stroke-linecap="round"/>
+  <path d="M41 50Q60 46 79 50L83 147Q60 153 37 147Z" fill="#dcb968" stroke="#94712c" stroke-width="1.5"/>
+  ${strawLines(44, 77, 54, 146, 4.5, true)}
+  <ellipse cx="60" cy="31" rx="15" ry="19" fill="#dcb968" stroke="#94712c" stroke-width="1.5"/>
+  <path d="M51 16Q49 31 52 46M56 13Q55 31 56 49M60 12V50M64 13Q65 31 64 49M69 16Q71 31 68 46" stroke="#a9852f" stroke-width=".9" fill="none"/>
+  <path d="M60 13L52 3M60 13L57 1M60 13L63 1M60 13L68 3M60 13L72 7M60 13L48 7" stroke="#b8923e" stroke-width="1.5" stroke-linecap="round"/>
+  <rect x="44" y="46" width="32" height="6" rx="2" fill="#6b4226"/>
+  <rect x="39" y="130" width="44" height="6" rx="2" fill="#6b4226"/>
+  <rect x="22" y="59" width="5" height="24" rx="1.5" fill="#6b4226"/>
+  <rect x="93" y="59" width="5" height="24" rx="1.5" fill="#6b4226"/>
+  <rect x="45" y="86" width="30" height="38" rx="2" fill="#fbf6ea" stroke="${doll.color}" stroke-width="2.5"/>
+  <circle cx="60" cy="92" r="2" fill="${doll.color}"/>
+  <text x="60" y="112" text-anchor="middle" font-size="10" font-weight="800" fill="${doll.color}"
         font-family="Apple SD Gothic Neo, Noto Sans KR, sans-serif">${doll.tag}</text>
 </svg>`;
 }
 
-const CRACK_SVG = `
-<svg class="crack" viewBox="0 0 120 180" xmlns="http://www.w3.org/2000/svg">
-  <polyline points="64.8,0 55.2,39.6 66,72 54,104.4 64.8,136.8 56.4,180"
-            fill="none" stroke="#2a160a" stroke-width="3.5" stroke-linejoin="bevel"
-            pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>
+// 베는 선: 왼쪽 아래(0,108) → 오른쪽 위(120,40)
+const SLASH_SVG = `
+<svg class="slash" viewBox="0 0 120 180" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <line x1="-12" y1="114.8" x2="132" y2="33.2" stroke="#fff" stroke-width="5" stroke-linecap="round"
+        pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" style="filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 2px #9ad)"/>
 </svg>`;
 
 // ---- 화면 ----------------------------------------------------------------
@@ -139,16 +146,15 @@ function render({ arriving = false } = {}) {
     const sub = { waiting: '도착 전', locked: '🔒 앞 인형 먼저', ready: '눌러서 부수기', broken: '✔ 부숨' }[st];
     slot.innerHTML = `
       <button class="doll" aria-label="${i + 1}번째 목각 인형: ${doll.name} (${sub})" ${st === 'ready' ? '' : 'aria-disabled="true"'}>
-        <div class="half l">${dollSVG(doll)}</div>
-        <div class="half r">${dollSVG(doll)}</div>
-        ${CRACK_SVG}
+        <div class="half bot">${dollSVG(doll)}</div>
+        <div class="half top">${dollSVG(doll)}</div>
+        ${SLASH_SVG}
       </button>
       <div class="label">${i + 1}. ${doll.name}</div>
       <div class="sub">${sub}</div>`;
     if (arriving) slot.querySelector('.doll').style.animationDelay = `${i * 0.15}s`;
     if (st === 'broken') {
-      slot.querySelector('.half.l').style.transform = 'translate(-10%, 0) rotate(-12deg)';
-      slot.querySelector('.half.r').style.transform = 'translate(10%, 0) rotate(12deg)';
+      slot.querySelector('.half.top').style.transform = FALLEN;
     }
     slot.querySelector('.doll').addEventListener('click', () => onDollTap(i));
     shelf.appendChild(slot);
@@ -160,6 +166,7 @@ function render({ arriving = false } = {}) {
 }
 
 // ---- 상호작용 ------------------------------------------------------------
+const FALLEN = 'translate(-14%, 34%) rotate(-30deg)'; // 베인 윗부분이 떨어져 누운 자세
 let pending = null;
 let busy = false;
 
@@ -221,52 +228,51 @@ async function smash(i) {
   const slot = $('shelf').children[i];
   slot.classList.remove('ready');
   const doll = slot.querySelector('.doll');
-  const l = doll.querySelector('.half.l');
-  const r = doll.querySelector('.half.r');
-  const crack = doll.querySelector('.crack');
-  const line = crack.querySelector('polyline');
+  const top = doll.querySelector('.half.top');
+  const slash = doll.querySelector('.slash');
+  const line = slash.querySelector('line');
+  const box = doll.getBoundingClientRect();
 
-  // 1) 덜덜 떨기
+  // 1) 숨 고르기: 살짝 움찔
   if (!reduced) {
     await doll.animate([
-      { transform: 'rotate(0) scale(1)' },
-      { transform: 'rotate(-6deg) scale(1.03)' },
-      { transform: 'rotate(6deg) scale(1.05)' },
-      { transform: 'rotate(-8deg) scale(1.07)' },
-      { transform: 'rotate(8deg) scale(1.08)' },
-      { transform: 'rotate(0) scale(1.1)' },
-    ], { duration: 520, easing: 'ease-in' }).finished;
+      { transform: 'rotate(0)' }, { transform: 'rotate(2deg) translateX(2px)' }, { transform: 'rotate(0)' },
+    ], { duration: 300, easing: 'ease-in-out' }).finished;
   }
 
-  // 2) 쩍! 금이 감
-  crack.style.opacity = '1';
-  await line.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: reduced ? 1 : 180, fill: 'forwards' }).finished;
-
-  // 3) 쾅! 두 동강
-  crunch();
-  navigator.vibrate?.([20, 30, 120]);
-  const box = doll.getBoundingClientRect();
-  bang(box.left + box.width / 2, box.top + box.height * 0.35);
+  // 2) 싹둑! 칼날이 대각선으로 지나감
+  slash.style.opacity = '1';
+  swish();
+  navigator.vibrate?.([15, 20, 90]);
+  await line.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }],
+    { duration: reduced ? 1 : 110, easing: 'ease-in', fill: 'forwards' }).finished;
+  bang(box.left + box.width * 0.78, box.top + box.height * 0.18);
   if (!reduced) {
-    document.body.classList.remove('shake');
-    void document.body.offsetWidth;
-    document.body.classList.add('shake');
-    chips(box.left + box.width / 2, box.top + box.height * 0.45, 26);
+    chips(box.left + box.width / 2, box.top + box.height * 0.41, 30);
+    slash.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 350, fill: 'forwards' });
+    await wait(260); // 베인 뒤 잠깐 멈춤 — 그다음 스르륵
   }
-  crack.style.opacity = '0';
-  const fly = (el, dir) => el.animate([
+  slash.style.opacity = '0';
+
+  // 3) 윗부분이 베인 면을 따라 미끄러져 떨어짐
+  await top.animate([
     { transform: 'translate(0,0) rotate(0)' },
-    { transform: `translate(${dir * 40}%, -16%) rotate(${dir * 30}deg)`, offset: 0.45 },
-    { transform: `translate(${dir * 10}%, 0) rotate(${dir * 12}deg)` },
-  ], { duration: reduced ? 1 : 650, easing: 'cubic-bezier(.2,.8,.3,1)', fill: 'forwards' }).finished;
-  await Promise.all([fly(l, -1), fly(r, 1)]);
-  await wait(250);
+    { transform: 'translate(-9%, 5%) rotate(-3deg)', offset: 0.3, easing: 'ease-in' },
+    { transform: 'translate(-17%, 37%) rotate(-38deg)', offset: 0.78 },
+    { transform: 'translate(-13%, 31%) rotate(-26deg)', offset: 0.9 },
+    { transform: FALLEN },
+  ], { duration: reduced ? 1 : 900, easing: 'ease-in', fill: 'forwards' }).finished;
+  if (!reduced) {
+    thud();
+    chips(box.left + box.width * 0.4, box.top + box.height * 0.85, 10);
+  }
+  await wait(300);
 }
 
 function bang(x, y) {
   const el = document.createElement('div');
   el.className = 'bang';
-  el.textContent = '쾅!';
+  el.textContent = '싹둑!';
   el.style.left = `${x}px`;
   el.style.top = `${y}px`;
   $('fx').appendChild(el);
@@ -283,10 +289,9 @@ function chips(x, y, n) {
     el.className = 'chip';
     el.style.left = `${x}px`;
     el.style.top = `${y}px`;
-    const w = 6 + Math.random() * 10;
-    el.style.width = `${w}px`;
-    el.style.height = `${w * (0.4 + Math.random() * 0.4)}px`;
-    if (Math.random() < 0.3) el.style.background = '#8b5a2b';
+    el.style.width = `${2 + Math.random() * 2}px`;
+    el.style.height = `${8 + Math.random() * 14}px`;
+    if (Math.random() < 0.35) el.style.background = '#b8923e';
     $('fx').appendChild(el);
     const a = Math.random() * Math.PI * 2;
     const v = 80 + Math.random() * 160;
@@ -302,24 +307,26 @@ function chips(x, y, n) {
 }
 
 let audio;
-function crunch() {
+function noise(seconds, shape, filterType, freq, gainValue) {
   try {
     audio ||= new (window.AudioContext || window.webkitAudioContext)();
-    const len = audio.sampleRate * 0.25;
+    const len = Math.floor(audio.sampleRate * seconds);
     const buf = audio.createBuffer(1, len, audio.sampleRate);
     const data = buf.getChannelData(0);
-    for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3);
+    for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * shape(i / len);
     const src = audio.createBufferSource();
     src.buffer = buf;
     const filter = audio.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.value = 1400;
+    filter.type = filterType;
+    filter.frequency.value = freq;
     const gain = audio.createGain();
-    gain.gain.value = 0.8;
+    gain.gain.value = gainValue;
     src.connect(filter).connect(gain).connect(audio.destination);
     src.start();
   } catch { /* 소리 없이 진행 */ }
 }
+const swish = () => noise(0.22, (t) => Math.sin(Math.PI * t) ** 2, 'bandpass', 3200, 1.2); // 칼바람
+const thud = () => noise(0.18, (t) => (1 - t) ** 4, 'lowpass', 500, 1.0);                // 툭 떨어짐
 
 function celebrate() {
   if (reduced) return;
