@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>목각 인형 부수기</title>
+  <meta name="description" content="약을 먹어야만 부술 수 있는 목각 인형 게임">
+  <meta name="theme-color" content="#6b4226">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="목각부수기">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>목각 인형 부수기</h1>
+    <p class="date" id="today"></p>
+    <p class="streak" id="streak"></p>
+  </header>
+
+  <main>
+    <section class="status" id="status" aria-live="polite"></section>
+
+    <button class="delivery" id="receiveBtn" hidden>
+      <span class="box" aria-hidden="true">📦</span>
+      <span>목각 인형 받기</span>
+    </button>
+
+    <section class="shelf" id="shelf" aria-label="오늘의 목각 인형"></section>
+
+    <section class="done" id="done" hidden>
+      <p class="done-big">🎉 오늘 3개 모두 부쉈어요!</p>
+      <p>내일 오후 1시에 새 인형이 도착합니다.</p>
+    </section>
+  </main>
+
+  <details class="settings" id="settings">
+    <summary>🔔 알림 설정</summary>
+    <div class="settings-body">
+      <h3>1. 휴대폰 캘린더 알림 <small>(추천 · 오프라인 OK)</small></h3>
+      <p>캘린더에 매일 반복 일정을 넣으면 인터넷이 없어도, 앱을 꺼 둬도 휴대폰이 알려줍니다.</p>
+      <ul class="times">
+        <li>매일 <b>오후 1시</b> — 목각 인형 3개 도착</li>
+        <li>매일 <b>밤 10시</b> — 목각 인형 부수기</li>
+      </ul>
+      <a class="btn" href="reminders.ics" download="breakmed-reminders.ics">📅 캘린더에 알림 추가</a>
+      <p class="hint">아이폰: Safari에서 누르면 “캘린더에 추가”가 뜹니다.<br>
+      안드로이드: 받은 파일을 열어 Google 캘린더(또는 삼성 캘린더)로 가져오세요.</p>
+
+      <h3>2. 앱 알림</h3>
+      <p>홈 화면에 추가한 뒤 켜면, 앱이 살아 있는 동안 같은 시간에 알림을 보냅니다.
+      휴대폰이 앱을 종료하면 오지 않을 수 있으니 1번과 함께 쓰세요.</p>
+      <button class="btn" id="notifyBtn">🔔 앱 알림 켜기</button>
+      <p class="hint" id="notifyState"></p>
+    </div>
+  </details>
+
+  <div class="modal" id="modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalQ">
+      <div class="modal-icon" id="modalIcon"></div>
+      <p class="modal-q" id="modalQ"></p>
+      <button class="ate" id="ateBtn">먹었다.</button>
+    </div>
+  </div>
+
+  <div class="fx" id="fx" aria-hidden="true"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
