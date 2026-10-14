@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#f6ecdc"/>
+  <g transform="translate(131 46) scale(2.3)">
+
+  <rect x="55" y="140" width="10" height="34" fill="#7a4a24"/>
+  <rect x="32" y="169" width="56" height="9" rx="2" fill="#5a3518"/>
+  <path d="M10 61Q60 55 110 61L110 81Q60 75 10 81Z" fill="#d6b25e" stroke="#94712c" stroke-width="1.5"/>
+  <path d="M12 64L108 64.4M12 67.5L108 67.9M12 71L108 71.4M12 74.5L108 74.9M12 78L108 78.4" stroke="#a9852f" stroke-width=".9" fill="none" opacity=".75"/>
+  <path d="M10 62L3 57M10 66L2 65M10 71L1 73M10 76L3 81M10 80L5 86M110 62L117 57M110 66L118 65M110 71L119 73M110 76L117 81M110 80L115 86"
+        stroke="#b8923e" stroke-width="1.4" stroke-linecap="round"/>
+  <path d="M41 50Q60 46 79 50L83 147Q60 153 37 147Z" fill="#dcb968" stroke="#94712c" stroke-width="1.5"/>
+  <path d="M44 54L44.6 146M48.5 54L49.1 146M53 54L53.6 146M57.5 54L58.1 146M62 54L62.6 146M66.5 54L67.1 146M71 54L71.6 146M75.5 54L76.1 146" stroke="#a9852f" stroke-width=".9" fill="none" opacity=".75"/>
+  <ellipse cx="60" cy="31" rx="15" ry="19" fill="#dcb968" stroke="#94712c" stroke-width="1.5"/>
+  <path d="M51 16Q49 31 52 46M56 13Q55 31 56 49M60 12V50M64 13Q65 31 64 49M69 16Q71 31 68 46" stroke="#a9852f" stroke-width=".9" fill="none"/>
+  <path d="M60 13L52 3M60 13L57 1M60 13L63 1M60 13L68 3M60 13L72 7M60 13L48 7" stroke="#b8923e" stroke-width="1.5" stroke-linecap="round"/>
+  <rect x="44" y="46" width="32" height="6" rx="2" fill="#6b4226"/>
+  <rect x="39" y="130" width="44" height="6" rx="2" fill="#6b4226"/>
+  <rect x="22" y="59" width="5" height="24" rx="1.5" fill="#6b4226"/>
+  <rect x="93" y="59" width="5" height="24" rx="1.5" fill="#6b4226"/>
+  <rect x="45" y="86" width="30" height="38" rx="2" fill="#fbf6ea" stroke="#b5482a" stroke-width="2.5"/>
+  <circle cx="60" cy="92" r="2" fill="#b5482a"/>
+  <text x="60" y="112" text-anchor="middle" font-size="10" font-weight="800" fill="#b5482a"
+        font-family="Apple SD Gothic Neo, Noto Sans KR, sans-serif">홍삼</text>
+
+    <line x1="-4" y1="110" x2="124" y2="37" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+  </g>
+</svg>
