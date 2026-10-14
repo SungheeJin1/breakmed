@@ -16,6 +16,8 @@ concurrency:
 
 jobs:
   deploy:
+    # 무료 계정은 비공개 저장소에서 Pages를 쓸 수 없어 실패하므로, 비공개인 동안은 건너뜀
+    if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
     environment:
       name: github-pages
