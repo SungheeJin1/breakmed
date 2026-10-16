@@ -196,3 +196,19 @@ body.shake { animation: screenshake .35s linear; }
 @media (prefers-reduced-motion: reduce) {
   .slot.ready .doll, .delivery { animation: none; }
 }
+
+/* ---- 3D 모드 ---- */
+.stage { display: none; }
+body.three .stage {
+  display: block;
+  margin-top: 14px;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 6px 0 #5a3a1a, 0 10px 24px rgba(60, 30, 10, .25);
+  touch-action: manipulation;
+  cursor: pointer;
+}
+body.three .stage canvas { display: block; }
+body.three .shelf { border-bottom: 0; box-shadow: none; margin-top: 6px; padding-top: 4px; }
+body.three .slot .doll { display: none; }
+body.three .slot { cursor: pointer; }

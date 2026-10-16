@@ -108,6 +108,14 @@ const SLASH_SVG = `
         pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" style="filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 2px #9ad)"/>
 </svg>`;
 
+// ---- 3D 장면 (안 되는 기기는 2D 그림으로) ----------------------------------
+let scene = null;
+try {
+  const { createScene } = await import('./scene3d.js');
+  scene = createScene($('stage'), DOLLS, (i) => onDollTap(i));
+} catch (e) { console.warn('3D 사용 불가, 2D로 표시', e); }
+if (scene) document.body.classList.add('three');
+
 // ---- 화면 ----------------------------------------------------------------
 function slotStatus(rec, i) {
   const doll = DOLLS[i];
@@ -171,8 +179,10 @@ function render({ arriving = [] } = {}) {
       slot.querySelector('.half.top').style.transform = FALLEN;
     }
     slot.querySelector('.doll').addEventListener('click', () => onDollTap(i));
+    if (scene) slot.addEventListener('click', () => onDollTap(i)); // 3D에선 이름표를 눌러도 됨
     shelf.appendChild(slot);
   });
+  scene?.update(DOLLS.map((_, i) => slotStatus(rec, i)), arriving, reduced);
 
   if (arriving.length) {
     setTimeout(() => shelf.querySelectorAll('.slot').forEach((el) => el.classList.remove('arriving')), 1200);
@@ -189,7 +199,7 @@ function onDollTap(i) {
   const st = slotStatus(rec, i);
   const slot = $('shelf').children[i];
   if (st === 'locked') {
-    nudge(slot);
+    if (scene) scene.nudge(i); else nudge(slot);
     $('status').innerHTML = `먼저 <b>${DOLLS[i - 1].name}</b> 인형부터 부숴야 해요.`;
     return;
   }
@@ -241,6 +251,19 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 async function smash(i) {
+  if (scene) {
+    await scene.smash(i, {
+      reduced,
+      onSlash: () => {
+        swish();
+        navigator.vibrate?.([15, 20, 90]);
+        const p = scene.screenPos(i, 2.6);
+        bang(p.x + 30, p.y);
+      },
+      onLand: () => thud(),
+    });
+    return;
+  }
   const slot = $('shelf').children[i];
   slot.classList.remove('ready');
   const doll = slot.querySelector('.doll');

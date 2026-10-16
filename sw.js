@@ -1,6 +1,6 @@
 // 오프라인에서도 앱이 열리도록 파일을 캐시합니다.
-const CACHE = 'breakmed-v4';
-const FILES = ['./', 'index.html', 'style.css', 'app.js', 'manifest.webmanifest', 'reminders.ics',
+const CACHE = 'breakmed-v5';
+const FILES = ['./', 'index.html', 'style.css', 'app.js', 'scene3d.js', 'vendor/three.module.min.js', 'manifest.webmanifest', 'reminders.ics',
   'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png'];
 
 self.addEventListener('install', (e) => {
