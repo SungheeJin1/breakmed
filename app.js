@@ -234,6 +234,7 @@ $('ateBtn').addEventListener('click', async () => {
   const i = pending;
   pending = null;
   $('modal').hidden = true;
+  unlockAudio(); // 아이폰은 탭하는 그 순간에 켜야 소리가 남
   busy = true;
   const rec = today();
   if (!rec.broken.includes(DOLLS[i].id)) rec.broken.push(DOLLS[i].id);
@@ -261,6 +262,7 @@ async function smash(i) {
       reduced,
       onSlash: () => {
         swish();
+        chop();
         navigator.vibrate?.([15, 20, 90]);
         const p = scene.screenPos(i, 2.6);
         bang(p.x + 30, p.y);
@@ -287,6 +289,7 @@ async function smash(i) {
   // 2) 싹둑! 칼날이 대각선으로 지나감
   slash.style.opacity = '1';
   swish();
+  chop();
   navigator.vibrate?.([15, 20, 90]);
   await line.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }],
     { duration: reduced ? 1 : 110, easing: 'ease-in', fill: 'forwards' }).finished;
@@ -351,9 +354,20 @@ function chips(x, y, n) {
 }
 
 let audio;
-function noise(seconds, shape, filterType, freq, gainValue) {
+function unlockAudio() {
   try {
     audio ||= new (window.AudioContext || window.webkitAudioContext)();
+    if (audio.state !== 'running') audio.resume();
+    const src = audio.createBufferSource(); // 무음 한 번 재생해서 잠금 해제
+    src.buffer = audio.createBuffer(1, 1, audio.sampleRate);
+    src.connect(audio.destination);
+    src.start();
+  } catch { /* 소리 없이 진행 */ }
+}
+function noise(seconds, shape, filterType, freq, gainValue, delay = 0) {
+  try {
+    audio ||= new (window.AudioContext || window.webkitAudioContext)();
+    if (audio.state !== 'running') audio.resume();
     const len = Math.floor(audio.sampleRate * seconds);
     const buf = audio.createBuffer(1, len, audio.sampleRate);
     const data = buf.getChannelData(0);
@@ -366,11 +380,15 @@ function noise(seconds, shape, filterType, freq, gainValue) {
     const gain = audio.createGain();
     gain.gain.value = gainValue;
     src.connect(filter).connect(gain).connect(audio.destination);
-    src.start();
+    src.start(audio.currentTime + delay);
   } catch { /* 소리 없이 진행 */ }
 }
 const swish = () => noise(0.22, (t) => Math.sin(Math.PI * t) ** 2, 'bandpass', 3200, 1.2); // 칼바람
 const thud = () => noise(0.18, (t) => (1 - t) ** 4, 'lowpass', 500, 1.0);                // 툭 떨어짐
+const chop = () => {                                                                          // 탁! 짚 베이는 소리
+  noise(0.06, (t) => (1 - t) ** 2, 'highpass', 1800, 1.4, 0.09);
+  noise(0.14, (t) => (1 - t) ** 3, 'lowpass', 900, 1.1, 0.09);
+};
 
 function celebrate() {
   if (reduced) return;
