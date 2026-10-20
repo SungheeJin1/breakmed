@@ -3,7 +3,7 @@
 // ---- 설정 ----------------------------------------------------------------
 const BREAK_HOUR = 22;     // 밤 10시: 부수기 알림 (인형별 도착 시간은 아래 DOLLS의 arrive)
 const DAY_START_HOUR = 4;  // 새벽 4시 전까지는 '어제'로 취급 (자정 넘어 부숴도 인정)
-const SEQUENTIAL = true;   // 첫 번째 → 두 번째 → 세 번째 순서로만 부술 수 있음
+const SEQUENTIAL = false;  // true면 첫 번째 → 두 번째 → 세 번째 순서로만 부술 수 있음
 
 const DOLLS = [
   { id: 'calcium', name: '칼슘제', question: '칼슘제를 먹었습니까?', icon: '🦴', color: '#4f7fb8', tag: '칼슘', arrive: 10 },
@@ -142,6 +142,11 @@ function render({ arriving = [] } = {}) {
   let msg;
   if (toReceive.length) {
     msg = `📦 ${toReceive.map((d) => d.name).join('·')} 인형이 도착했어요! 받아 주세요.`;
+  } else if (!SEQUENTIAL && left.some((d) => rec.received.includes(d.id))) {
+    const can = left.filter((d) => rec.received.includes(d.id));
+    msg = can.length === 1
+      ? `<b>${eulReul(can[0].name)}</b> 먹고 인형을 베세요.`
+      : `먹은 약의 인형을 베세요. <small>(${can.map((d) => d.name).join('·')})</small>`;
   } else if (next && !rec.received.includes(next.id)) {
     const coming = DOLLS.filter((d) => d.arrive === next.arrive);
     const mins = Math.ceil((at(day, next.arrive) - now) / 60000);
